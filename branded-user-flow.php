@@ -4,6 +4,7 @@
  * Description: Replace the WordPress user flow
  * Version: 1.0.0
  * Author: Ethan Clevenger
+ * BitBucket Plugin URI: https://bitbucket.org/webspec/branded-user-flow
  * Based on the tutorial by Jarkko Laine at http://code.tutsplus.com/tutorials/build-a-custom-wordpress-user-flow-part-1-replace-the-login-page--cms-23627
  */
 
