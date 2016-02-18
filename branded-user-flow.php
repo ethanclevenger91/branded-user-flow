@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Branded User Flow
  * Description: Replace the WordPress user flow
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: Ethan Clevenger
  * BitBucket Plugin URI: https://bitbucket.org/webspec/branded-user-flow
  * Based on the tutorial by Jarkko Laine at http://code.tutsplus.com/tutorials/build-a-custom-wordpress-user-flow-part-1-replace-the-login-page--cms-23627
@@ -187,7 +187,7 @@ class Branded_User_Flow {
       }
     } else {
       //TODO: add filter here or use settings page
-      wp_redirect($this->get_logged_in_url());
+      wp_redirect($this->get_logged_in_url($user));
     }
     exit;
   }
@@ -217,7 +217,7 @@ class Branded_User_Flow {
           }
       } else {
           // Non-admin users always go to their account page after login
-          $redirect_url = $this->get_logged_in_url();
+          $redirect_url = $this->get_logged_in_url($user);
       }
 
       return wp_validate_redirect( $redirect_url, home_url() );
@@ -685,7 +685,7 @@ class Branded_User_Flow {
    *
    * @return string The logged in redirect URL
    */
-  function get_logged_in_url() {
+  function get_logged_in_url($user) {
     //TODO: Write settings page that takes pages and use their IDs
     /**
      * Filter to get custom logged in url
@@ -693,7 +693,7 @@ class Branded_User_Flow {
      * @since 1.0.0
      *
      */
-    return apply_filters('branded_user_flow_logged_in_url', home_url('member-account'));
+    return apply_filters('branded_user_flow_logged_in_url', home_url('member-account'), $user);
   }
 
   /**
