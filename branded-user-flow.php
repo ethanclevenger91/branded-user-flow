@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Branded User Flow
  * Description: Replace the WordPress user flow
- * Version: 1.0.1
+ * Version: 1.1.0
  * Author: Ethan Clevenger
  * BitBucket Plugin URI: https://bitbucket.org/webspec/branded-user-flow
  * Based on the tutorial by Jarkko Laine at http://code.tutsplus.com/tutorials/build-a-custom-wordpress-user-flow-part-1-replace-the-login-page--cms-23627
@@ -19,6 +19,7 @@ class Branded_User_Flow {
     add_shortcode('branded-user-flow-register', [$this, 'render_register_form']);
     add_shortcode('branded-user-flow-lostpassword', [$this, 'render_lostpassword_form']);
     add_shortcode('branded-user-flow-resetpass', [$this, 'render_resetpass_form']);
+    add_shortcode('branded-user-flow-account', [$this, 'render_account_form']);
 
     //login hooks
     add_action('login_form_login', [$this, 'redirect_to_custom_login']);
@@ -275,6 +276,8 @@ class Branded_User_Flow {
 
         $result = $this->register_user($email, $first_name, $last_name);
 
+        do_action('branded_user_flow_after_register', $_POST, $result);
+
         if(is_wp_error($result)) {
           $errors = join(',', $result->get_error_codes());
           $redirect_url = add_query_arg('register-errors', $errors, $redirect_url);
@@ -285,6 +288,13 @@ class Branded_User_Flow {
       }
       wp_redirect($redirect_url);
       exit;
+    }
+  }
+
+  public function do_update_user() {
+    if('POST' == $_SERVER['REQUEST_METHOD'] && is_user_logged_in()) {
+      // TODO: Here would be the place to _update_ the existing user data
+      do_action('branded_user_flow_after_update', $_POST, get_current_user_id());
     }
   }
 
@@ -526,6 +536,8 @@ class Branded_User_Flow {
     $default_attributes = array( 'show_title' => false );
     $attributes = shortcode_atts( $default_attributes, $attributes );
     $attributes['errors'] = [];
+
+
     if(isset($_REQUEST['register-errors'])) {
       $error_codes = explode(',', $_REQUEST['register-errors']);
       foreach($error_codes as $code) {
@@ -533,14 +545,12 @@ class Branded_User_Flow {
       }
     }
 
-    if(is_user_logged_in()) {
-      if ( is_user_logged_in() ) {
-          return __( 'You are already signed in.', 'personalize-login' );
-      } elseif ( ! get_option( 'users_can_register' ) ) {
-          return __( 'Registering new users is currently not allowed.', 'personalize-login' );
-      } else {
-          return $this->get_template_html( 'register_form', $attributes );
-      }
+    if ( is_user_logged_in() ) {
+        return __( 'You are already signed in.', 'personalize-login' );
+    } elseif ( ! get_option( 'users_can_register' ) ) {
+        return __( 'Registering new users is currently not allowed.', 'personalize-login' );
+    } else {
+        return $this->get_template_html( 'register_form', $attributes );
     }
   }
 
@@ -608,6 +618,29 @@ class Branded_User_Flow {
           } else {
               return __( 'Invalid password reset link.', 'personalize-login' );
           }
+      }
+  }
+
+  /**
+   * A shortcode for rendering the user's account details.
+   *
+   * @param  array   $attributes  Shortcode attributes.
+   * @param  string  $content     The text content for shortcode. Not used.
+   *
+   * @return string  The shortcode output
+   */
+  public function render_account_form( $attributes, $content = null ) {
+      // Parse shortcode attributes
+      $default_attributes = array( 'show_title' => false );
+      $attributes = shortcode_atts( $default_attributes, $attributes );
+
+      if ( !is_user_logged_in() ) {
+          return __( 'You must be logged in to view this page.', 'personalize-login' );
+      } else {
+        $this->do_update_user();
+        $user = get_current_user_id();
+        $attributes['user'] = $user;
+        return $this->get_template_html( 'account_form', $attributes );
       }
   }
 

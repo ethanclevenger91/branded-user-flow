@@ -3,8 +3,8 @@
         <h3><?php _e( 'Register', 'personalize-login' ); ?></h3>
     <?php endif; ?>
 
-    <form id="signupform" action="<?php echo wp_registration_url(); ?>" method="post">
-        <p class="form-row">
+    <form id="signupform" method="post">
+        <!-- <p class="form-row">
             <label for="email"><?php _e( 'Email', 'personalize-login' ); ?> <strong>*</strong></label>
             <input type="text" name="email" id="email">
         </p>
@@ -17,20 +17,17 @@
         <p class="form-row">
             <label for="last_name"><?php _e( 'Last name', 'personalize-login' ); ?></label>
             <input type="text" name="last_name" id="last-name">
-        </p>
+        </p> -->
+        <?php // TODO: Build out functionality to support existing fields ?>
 
-        <?php do_action('branded_user_register_fields'); ?>
-
-        <p class="form-row">
-            <?php _e( 'Note: Your password will be generated automatically and sent to your email address.', 'personalize-login' ); ?>
-        </p>
+        <?php do_action('branded_user_register_fields', $attributes['user']); ?>
 
         <!-- Honeypot -->
         <input type="text" style="border:none;height:0;font-size:0;position:absolute;left:-9999px;" id="foobar" name="foobar" placeholder="Foobar" autocomplete="off">
 
         <p class="signup-submit">
             <input type="submit" name="submit" class="register-button"
-                   value="<?php _e( 'Register', 'personalize-login' ); ?>"/>
+                   value="<?php _e( 'Update', 'personalize-login' ); ?>"/>
         </p>
     </form>
 </div>
